@@ -1,4 +1,7 @@
 package org.ironhack.project.eventmanagement.repository;
 
-public class BookingRepository {
+import org.ironhack.project.eventmanagement.entity.Booking;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface BookingRepository extends JpaRepository<Booking, Long> {
 }
