@@ -1,23 +1,25 @@
 package org.ironhack.project.eventmanagement.service.category.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.ironhack.project.eventmanagement.dto.request.category.CategoryRequest;
 import org.ironhack.project.eventmanagement.dto.response.CategoryResponse;
 import org.ironhack.project.eventmanagement.entity.Category;
+import org.ironhack.project.eventmanagement.exception.NotFoundException;
 import org.ironhack.project.eventmanagement.mapper.CategoryMapper;
 import org.ironhack.project.eventmanagement.repository.CategoryRepository;
 import org.ironhack.project.eventmanagement.service.category.CategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class CategoryServiceImp implements CategoryService {
     private final CategoryRepository repository;
     private final CategoryMapper mapper;
 
+    CategoryServiceImp(CategoryRepository repository, CategoryMapper mapper) {
+        this.repository = repository;
+        this.mapper = mapper;
+    }
     // create
     @Override
     public CategoryResponse create(CategoryRequest request){

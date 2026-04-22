@@ -11,10 +11,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
-@RequiredArgsConstructor
 public class CategoryController {
     private final CategoryService categoryService;
 
+    CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
     @PostMapping
     public CategoryResponse create(@Valid @RequestBody CategoryRequest request){
         return categoryService.create(request);

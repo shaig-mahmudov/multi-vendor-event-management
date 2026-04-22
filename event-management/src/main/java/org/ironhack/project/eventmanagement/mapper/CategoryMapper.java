@@ -3,9 +3,11 @@ package org.ironhack.project.eventmanagement.mapper;
 import org.ironhack.project.eventmanagement.dto.request.category.CategoryRequest;
 import org.ironhack.project.eventmanagement.dto.response.CategoryResponse;
 import org.ironhack.project.eventmanagement.entity.Category;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
+@Component
 public class CategoryMapper {
     // for create
     public Category toEntity(CategoryRequest request){
