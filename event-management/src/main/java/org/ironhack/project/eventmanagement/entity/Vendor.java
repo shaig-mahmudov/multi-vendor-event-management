@@ -1,12 +1,15 @@
 package org.ironhack.project.eventmanagement.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 public class Vendor {
 
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,4 +27,5 @@ public class Vendor {
 
     @OneToMany(mappedBy = "vendor")
     private List<EventOrganizer> events;
+
 }
