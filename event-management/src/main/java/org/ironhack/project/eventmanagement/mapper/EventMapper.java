@@ -22,8 +22,6 @@ public class EventMapper {
         event.setLocation(request.getLocation());
         event.setImageUrl(request.getImageUrl());
         event.setCategory(category);
-        event.setStatus(EventStatus.DRAFT);
-        event.setCreatedAt(LocalDateTime.now());
         return event;
     }
 
@@ -52,8 +50,6 @@ public class EventMapper {
         if(category != null){
             event.setCategory(category);
         }
-
-        event.setUpdatedAt(LocalDateTime.now());
     }
 
     // for response

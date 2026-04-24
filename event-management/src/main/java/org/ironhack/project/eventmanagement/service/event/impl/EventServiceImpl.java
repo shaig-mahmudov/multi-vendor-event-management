@@ -18,9 +18,9 @@ import java.util.List;
 
 @Service
 public class EventServiceImpl implements EventService {
-    private EventRepository eventRepository;
-    private CategoryRepository categoryRepository;
-    private EventMapper mapper;
+    private final EventRepository eventRepository;
+    private final CategoryRepository categoryRepository;
+    private final EventMapper mapper;
 
     public EventServiceImpl(EventRepository eventRepository, CategoryRepository categoryRepository, EventMapper mapper) {
         this.eventRepository = eventRepository;
@@ -55,9 +55,37 @@ public class EventServiceImpl implements EventService {
 
     // public listing
     @Override
-    public List<EventResponse> getAllPublished(){
-        return eventRepository.findByStatus(EventStatus.PUBLISHED)
-                .stream()
+    public List<EventResponse> getAllPublished(Long categoryId,LocalDateTime fromDate, LocalDateTime toDate){
+        List<Event> events;
+
+        if(fromDate != null && toDate != null){
+            if(categoryId != null){
+                events = eventRepository.findByCategoryIdAndStatusAndDateBetween(categoryId, EventStatus.PUBLISHED, fromDate, toDate);
+            }else {
+                events = eventRepository.findByStatusAndDateBetween(EventStatus.PUBLISHED, fromDate, toDate);
+            }
+        }else if(fromDate != null){
+            if(categoryId != null){
+                events = eventRepository.findByCategoryIdAndStatusAndDateAfter(categoryId, EventStatus.PUBLISHED, fromDate);
+            }else{
+                events = eventRepository.findByStatusAndDateAfter(EventStatus.PUBLISHED, fromDate);
+            }
+        }else if(toDate != null){
+            if(categoryId != null){
+                events = eventRepository.findByCategoryIdAndStatusAndDateBefore(categoryId, EventStatus.PUBLISHED, toDate);
+            }else{
+                events = eventRepository.findByStatusAndDateBefore(EventStatus.PUBLISHED, toDate);
+            }
+        }else{
+            if(categoryId != null){
+                events = eventRepository
+                        .findByCategoryIdAndStatus(categoryId, EventStatus.PUBLISHED);
+            }else{
+                events = eventRepository.findByStatus(EventStatus.PUBLISHED);
+            }
+        }
+
+        return events.stream()
                 .map(mapper::toResponse)
                 .toList();
     }
@@ -84,6 +112,7 @@ public class EventServiceImpl implements EventService {
                     .orElseThrow(() -> new RuntimeException("Category not found"));
         }
         mapper.updateEntity(request,event,category);
+        event.setUpdatedAt(LocalDateTime.now());
 
         return mapper.toResponse(eventRepository.save(event));
     }
@@ -117,7 +146,7 @@ public class EventServiceImpl implements EventService {
     private void validateForPublish(Event event){
         List<String> errors = new ArrayList<>();
 
-        if(event.getTitle() == null || event.getTitle().isEmpty()){
+        if(event.getTitle() == null || event.getTitle().isBlank()){
             errors.add("Title is required");
         }
 
@@ -126,7 +155,7 @@ public class EventServiceImpl implements EventService {
             errors.add("Title length must be between 3 and 50 characters");
         }
 
-        if(event.getDescription() == null || event.getDescription().isEmpty()){
+        if(event.getDescription() == null || event.getDescription().isBlank()){
             errors.add("Description is required");
         }
 
@@ -139,7 +168,7 @@ public class EventServiceImpl implements EventService {
             errors.add("Date is required and must be in the future");
         }
 
-        if(event.getLocation() == null || event.getLocation().isEmpty()){
+        if(event.getLocation() == null || event.getLocation().isBlank()){
             errors.add("Location is required");
         }
 

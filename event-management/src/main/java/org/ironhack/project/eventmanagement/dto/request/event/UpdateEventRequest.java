@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 
 public class UpdateEventRequest {
     private String title;
+    @Size(max = 255)
     private String description;
-    @Future(message = "Event date must be in the future")
     private LocalDateTime date;
     private String location;
     private String imageUrl;

@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 public class CreateEventRequest {
     private String title;
+    @Size(max = 255)
     private String description;
     private LocalDateTime date;
     private String location;
