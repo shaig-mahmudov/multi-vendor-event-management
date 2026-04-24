@@ -2,6 +2,8 @@ package org.ironhack.project.eventmanagement.service.ticket.impl;
 
 import org.ironhack.project.eventmanagement.dto.request.ticket.CreateTicketCategoryRequest;
 import org.ironhack.project.eventmanagement.entity.TicketCategory;
+import org.ironhack.project.eventmanagement.exception.BadRequestException;
+import org.ironhack.project.eventmanagement.exception.NotFoundException;
 import org.ironhack.project.eventmanagement.repository.TicketCategoryRepository;
 import org.ironhack.project.eventmanagement.service.ticket.TicketCategoryService;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,7 @@ public class TicketCategoryServiceImpl implements TicketCategoryService {
     @Override
     public TicketCategory getById(Long id) {
         return ticketCategoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("TicketCategory not found"));
+                .orElseThrow(() -> new NotFoundException("Ticket category not found"));
     }
 
     @Override
@@ -49,8 +51,11 @@ public class TicketCategoryServiceImpl implements TicketCategoryService {
     public void validateAvailability(Long id, int quantity) {
         TicketCategory category = getById(id);
 
-        if (category.getQuantity() < quantity) {
-            throw new RuntimeException("Not enough tickets available");
+        if (quantity <= 0) {
+            throw new BadRequestException("Quantity must be greater than 0");
+        }
+        if (category.getQuantity() == null || category.getQuantity() < quantity) {
+            throw new BadRequestException("Not enough tickets available");
         }
     }
 
@@ -58,6 +63,9 @@ public class TicketCategoryServiceImpl implements TicketCategoryService {
     public void decreaseQuantity(Long id, int quantity) {
         TicketCategory category = getById(id);
 
+        if (category.getQuantity() == null) {
+            throw new BadRequestException("Ticket category quantity is not set");
+        }
         category.setQuantity(category.getQuantity() - quantity);
 
         ticketCategoryRepository.save(category);
