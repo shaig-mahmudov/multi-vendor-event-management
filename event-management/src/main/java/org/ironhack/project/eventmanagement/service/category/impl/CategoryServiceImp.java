@@ -3,7 +3,6 @@ package org.ironhack.project.eventmanagement.service.category.impl;
 import org.ironhack.project.eventmanagement.dto.request.category.CategoryRequest;
 import org.ironhack.project.eventmanagement.dto.response.CategoryResponse;
 import org.ironhack.project.eventmanagement.entity.Category;
-import org.ironhack.project.eventmanagement.exception.NotFoundException;
 import org.ironhack.project.eventmanagement.mapper.CategoryMapper;
 import org.ironhack.project.eventmanagement.repository.CategoryRepository;
 import org.ironhack.project.eventmanagement.service.category.CategoryService;

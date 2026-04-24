@@ -10,7 +10,7 @@ public class EventResponse {
     private Long id;
     private String title;
     private String description;
-    private LocalDate date;
+    private LocalDateTime date;
     private String location;
     private String imageUrl;
     private EventStatus status;
@@ -20,7 +20,7 @@ public class EventResponse {
     private String categoryName;
     private List<OrganizerDTO>  organizers;
 
-    public EventResponse(Long id, String title, String description, LocalDate date, String location, String imageUrl, EventStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public EventResponse(Long id, String title, String description, LocalDateTime date, String location, String imageUrl, EventStatus status,Long categoryId, String categoryName, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -28,6 +28,8 @@ public class EventResponse {
         this.location = location;
         this.imageUrl = imageUrl;
         this.status = status;
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -56,7 +58,7 @@ public class EventResponse {
         return description;
     }
 
-    public LocalDate getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 

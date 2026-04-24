@@ -5,20 +5,20 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 
 public class CreateEventRequest {
-    @NotBlank(message = "Title is required")
-    @Size(min = 3, max = 50, message = "Title must be between 3 and 50")
     private String title;
-    @NotBlank
-    @Size(max = 255, message = "Description can be max 255 characters")
     private String description;
-    @NotBlank(message = "Date is required")
-    @Future(message = "Event date must be in the future")
     private LocalDateTime date;
-    @NotBlank(message = "Location is required")
     private String location;
     private String imageUrl;
-    @NotBlank(message = "Category is required")
     private Long categoryId;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     public String getDescription() {
         return description;
