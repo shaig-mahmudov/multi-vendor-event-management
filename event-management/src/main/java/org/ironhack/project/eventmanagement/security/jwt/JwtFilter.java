@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.ironhack.project.eventmanagement.repository.JwtBlacklistRepository;
 import org.ironhack.project.eventmanagement.security.user.CustomUserDetailsService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,10 +19,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
+    private final JwtBlacklistRepository jwtBlacklistRepository;
 
-    public JwtFilter(JwtService jwtService, CustomUserDetailsService userDetailsService) {
+    public JwtFilter(JwtService jwtService, CustomUserDetailsService userDetailsService, JwtBlacklistRepository jwtBlacklistRepository) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.jwtBlacklistRepository = jwtBlacklistRepository;
     }
 
     @Override
@@ -43,6 +46,11 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         try {
+            if (jwtBlacklistRepository.existsByToken(token)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             var username = jwtService.extractUsername(token);
             var userDetails = userDetailsService.loadUserByUsername(username);
             if (!jwtService.isTokenValid(token, userDetails)) {

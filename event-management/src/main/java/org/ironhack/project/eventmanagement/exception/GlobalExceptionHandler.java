@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -21,7 +22,12 @@ public class GlobalExceptionHandler {
         else if (ex instanceof UnauthorizedException) status = HttpStatus.UNAUTHORIZED;
         else if (ex instanceof NotFoundException) status = HttpStatus.NOT_FOUND;
         else if (ex instanceof ForbiddenException) status = HttpStatus.FORBIDDEN;
-        return ResponseEntity.status(status).body(new ErrorResponse(ex.getMessage()));
+        return ResponseEntity.status(status).body(new ErrorResponse(status.value(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(HttpStatus.CONFLICT.value(), "Database constraint violation or conflict"));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -30,6 +36,6 @@ public class GlobalExceptionHandler {
                 .findFirst()
                 .map(err -> err.getField() + ": " + err.getDefaultMessage())
                 .orElse("Validation error");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(msg));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), msg));
     }
 }

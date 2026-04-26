@@ -44,9 +44,7 @@ public class VendorServiceImpl implements VendorService {
         vendor.setLogoUrl(request.getLogoUrl());
         vendor.setUser(user);
 
-        if (user.getRole() != Role.ADMIN) {
-            user.setRole(Role.VENDOR);
-        }
+        vendor.setStatus(org.ironhack.project.eventmanagement.entity.VendorStatus.PENDING);
         user.setVendor(vendor);
         userRepository.save(user);
 

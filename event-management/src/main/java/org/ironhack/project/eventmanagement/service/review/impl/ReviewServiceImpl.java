@@ -18,7 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
@@ -68,15 +69,13 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<ReviewResponse> getReviewsForEvent(Long eventId) {
+    public Page<ReviewResponse> getReviewsForEvent(Long eventId, Pageable pageable) {
         if (!eventRepository.existsById(eventId)) {
             throw new NotFoundException("Event not found");
         }
 
-        return reviewRepository.findByEventIdOrderByCreatedAtDesc(eventId)
-                .stream()
-                .map(reviewMapper::toResponse)
-                .toList();
+        return reviewRepository.findByEventIdOrderByCreatedAtDesc(eventId, pageable)
+                .map(reviewMapper::toResponse);
     }
 
     @Override
@@ -85,6 +84,37 @@ public class ReviewServiceImpl implements ReviewService {
             throw new NotFoundException("Event not found");
         }
         return reviewRepository.getAverageRatingForEvent(eventId);
+    }
+
+    @Transactional
+    @Override
+    public ReviewResponse updateReview(Long reviewId, org.ironhack.project.eventmanagement.dto.request.review.UpdateReviewRequest request) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new NotFoundException("Review not found"));
+
+        User user = requireCurrentUser();
+        if (!review.getUser().getId().equals(user.getId()) && user.getRole() != org.ironhack.project.eventmanagement.entity.Role.ADMIN) {
+            throw new UnauthorizedException("You can only update your own reviews");
+        }
+
+        if (request.getRating() != null) review.setRating(request.getRating());
+        if (request.getComment() != null) review.setComment(request.getComment());
+
+        return reviewMapper.toResponse(reviewRepository.save(review));
+    }
+
+    @Transactional
+    @Override
+    public void deleteReview(Long reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new NotFoundException("Review not found"));
+
+        User user = requireCurrentUser();
+        if (!review.getUser().getId().equals(user.getId()) && user.getRole() != org.ironhack.project.eventmanagement.entity.Role.ADMIN) {
+            throw new UnauthorizedException("You can only delete your own reviews");
+        }
+
+        reviewRepository.delete(review);
     }
 
     private User requireCurrentUser() {

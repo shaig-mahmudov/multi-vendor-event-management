@@ -19,6 +19,10 @@ public class Vendor {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private VendorStatus status = VendorStatus.PENDING;
+
     @OneToOne
     @JoinColumn(name = "user_id", unique = true)
     private User user;
@@ -84,6 +88,14 @@ public class Vendor {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public VendorStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(VendorStatus status) {
+        this.status = status;
     }
 
     public User getUser() {
