@@ -5,11 +5,11 @@ import jakarta.validation.constraints.NotNull;
 
 public class BookingItemRequest {
 
-    @NotNull(message = "Ticket category id cannot be null")
+    @NotNull(message = "ticketCategoryId is required")
     private Long ticketCategoryId;
 
-    @NotNull(message = "Quantity cannot be null")
-    @Min(value = 1, message = "Quantity must be at least 1")
+    @NotNull(message = "quantity is required")
+    @Min(value = 1, message = "quantity must be at least 1")
     private Integer quantity;
 
     public Long getTicketCategoryId() {

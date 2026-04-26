@@ -3,6 +3,8 @@ package org.ironhack.project.eventmanagement.service.ticket.impl;
 import org.ironhack.project.eventmanagement.dto.request.ticket.CreateTicketCategoryRequest;
 import org.ironhack.project.eventmanagement.entity.Event;
 import org.ironhack.project.eventmanagement.entity.TicketCategory;
+import org.ironhack.project.eventmanagement.exception.BadRequestException;
+import org.ironhack.project.eventmanagement.exception.NotFoundException;
 import org.ironhack.project.eventmanagement.repository.EventRepository;
 import org.ironhack.project.eventmanagement.repository.TicketCategoryRepository;
 import org.ironhack.project.eventmanagement.service.ticket.TicketCategoryService;
@@ -28,7 +30,7 @@ public class TicketCategoryServiceImpl implements TicketCategoryService {
     public TicketCategory getById(Long id) {
         return ticketCategoryRepository.findById(id)
                 .filter(TicketCategory::isActive)
-                .orElseThrow(() -> new RuntimeException("TicketCategory not found"));
+                .orElseThrow(() -> new NotFoundException("Ticket category not found"));
     }
 
     @Override
@@ -36,7 +38,7 @@ public class TicketCategoryServiceImpl implements TicketCategoryService {
     public TicketCategory create(CreateTicketCategoryRequest request) {
 
         Event event = eventRepository.findById(request.getEventId())
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+                .orElseThrow(() -> new NotFoundException("Event not found"));
 
         TicketCategory category = new TicketCategory();
         category.setName(request.getName());
@@ -44,6 +46,7 @@ public class TicketCategoryServiceImpl implements TicketCategoryService {
         category.setQuantity(request.getQuantity());
         category.setEvent(event);
         category.setCreatedAt(LocalDateTime.now());
+        category.setActive(true);
 
         return ticketCategoryRepository.save(category);
     }
@@ -69,8 +72,12 @@ public class TicketCategoryServiceImpl implements TicketCategoryService {
     public void validateAvailability(Long id, int quantity) {
         TicketCategory category = getById(id);
 
-        if (category.getQuantity() < quantity) {
-            throw new RuntimeException("Not enough tickets available");
+        if (quantity <= 0) {
+            throw new BadRequestException("Quantity must be greater than 0");
+        }
+
+        if (category.getQuantity() == null || category.getQuantity() < quantity) {
+            throw new BadRequestException("Not enough tickets available");
         }
     }
 
@@ -79,8 +86,12 @@ public class TicketCategoryServiceImpl implements TicketCategoryService {
     public void decreaseQuantity(Long id, int quantity) {
         TicketCategory category = getById(id);
 
+        if (category.getQuantity() == null) {
+            throw new BadRequestException("Ticket category quantity is not set");
+        }
+
         if (category.getQuantity() < quantity) {
-            throw new RuntimeException("Not enough tickets");
+            throw new BadRequestException("Not enough tickets");
         }
 
         category.setQuantity(category.getQuantity() - quantity);

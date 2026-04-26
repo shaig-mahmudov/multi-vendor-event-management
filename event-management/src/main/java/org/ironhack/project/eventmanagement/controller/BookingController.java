@@ -9,7 +9,7 @@ import org.ironhack.project.eventmanagement.service.booking.BookingService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/bookings")
+@RequestMapping("/api/bookings")
 public class BookingController {
 
     private final BookingService bookingService;
