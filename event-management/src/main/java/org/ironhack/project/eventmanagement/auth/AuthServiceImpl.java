@@ -102,6 +102,10 @@ public class AuthServiceImpl implements AuthService {
         }
         var user = userOpt.get();
 
+        if (!user.isEmailVerified()) {
+            throw new UnauthorizedException("Email not verified. Please check your email to verify your account.");
+        }
+
         if (user.getAccountLockedUntil() != null && user.getAccountLockedUntil().isAfter(LocalDateTime.now())) {
             throw new UnauthorizedException("Account is locked. Please try again later.");
         }
@@ -112,7 +116,6 @@ public class AuthServiceImpl implements AuthService {
             );
             var principal = (UserDetails) authentication.getPrincipal();
 
-            // Reset failed attempts on success
             user.setFailedLoginAttempts(0);
             user.setAccountLockedUntil(null);
             userRepository.save(user);
@@ -166,7 +169,6 @@ public class AuthServiceImpl implements AuthService {
         var token = request.getAccessToken();
         if (token != null && !token.isBlank()) {
             try {
-                // Determine expiry
                 var expiration = Instant.now().plusSeconds(jwtService.getExpirationSeconds());
                 var blacklist = new JwtBlacklist();
                 blacklist.setToken(token);
@@ -199,7 +201,7 @@ public class AuthServiceImpl implements AuthService {
     public void forgotPassword(ForgotPasswordRequest request) {
         var userOpt = userRepository.findByEmail(request.getEmail());
         if (userOpt.isEmpty()) {
-            return; // To prevent user enumeration
+            return;
         }
 
         var user = userOpt.get();
@@ -231,23 +233,22 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(user);
 
         passwordResetTokenRepository.delete(resetToken);
-        // Also invalidate all refresh tokens for this user
         refreshTokenRepository.deleteByUser(user);
     }
 
     private RefreshToken createRefreshToken(User user) {
-        refreshTokenRepository.deleteByUser(user); // Limit to 1 valid refresh token per user for simplicity
+        refreshTokenRepository.deleteByUser(user);
         
         var refreshToken = new RefreshToken();
         refreshToken.setUser(user);
         refreshToken.setToken(UUID.randomUUID().toString());
-        refreshToken.setExpiryDate(Instant.now().plusSeconds(86400 * 30)); // 30 days
+        refreshToken.setExpiryDate(Instant.now().plusSeconds(86400 * 30));
         return refreshTokenRepository.save(refreshToken);
     }
 
     private static Role normalizeRole(Role requested) {
         if (requested == null) return Role.CUSTOMER;
-        if (requested == Role.ADMIN) return Role.CUSTOMER; // Prevents privilege escalation
+        if (requested == Role.ADMIN) return Role.CUSTOMER;
         return requested;
     }
 
