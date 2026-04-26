@@ -1,9 +1,12 @@
 package org.ironhack.project.eventmanagement.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Getter
 @Entity
 public class Event {
 
