@@ -29,6 +29,7 @@ public class User {
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
 
     @Column(nullable = false)
@@ -53,7 +54,7 @@ public class User {
 
     @PrePersist
     void prePersist() {
-        var now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
         this.createdAt = now;
         this.updatedAt = now;
     }

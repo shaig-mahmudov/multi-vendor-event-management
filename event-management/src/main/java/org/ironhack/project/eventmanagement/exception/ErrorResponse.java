@@ -1,5 +1,8 @@
 package org.ironhack.project.eventmanagement.exception;
 
+<<<<<<< HEAD
+public class  ErrorResponse {
+=======
 import java.time.LocalDateTime;
 
 public class ErrorResponse {
@@ -40,4 +43,5 @@ public class ErrorResponse {
     public void setMessage(String message) {
         this.message = message;
     }
+>>>>>>> develop
 }

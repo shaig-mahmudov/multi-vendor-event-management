@@ -8,7 +8,7 @@ import java.util.List;
 public class CreateBookingRequest {
 
     @Valid
-    @NotEmpty(message = "items cannot be empty")
+    @NotEmpty(message = "Items cannot be empty")
     private List<BookingItemRequest> items;
 
     public List<BookingItemRequest> getItems() {

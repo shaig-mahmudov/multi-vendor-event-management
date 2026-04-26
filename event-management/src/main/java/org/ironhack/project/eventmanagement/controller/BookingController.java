@@ -22,10 +22,10 @@ public class BookingController {
     }
 
     @PostMapping
-    public BookingResponse createBooking(@Valid @RequestBody CreateBookingRequest request) {
-
+    public BookingResponse createBooking(
+            @Valid @RequestBody CreateBookingRequest request
+    ) {
         Booking booking = bookingService.createBooking(request);
-
         return bookingMapper.toResponse(booking);
     }
 
@@ -33,7 +33,6 @@ public class BookingController {
     public BookingResponse getBooking(@PathVariable Long id) {
 
         Booking booking = bookingService.getById(id);
-
         return bookingMapper.toResponse(booking);
     }
 
