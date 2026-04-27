@@ -1,5 +1,6 @@
 package org.ironhack.project.eventmanagement.controller;
 
+import jakarta.validation.Valid;
 import org.ironhack.project.eventmanagement.dto.request.organizer.AddOrganizerRequest;
 import org.ironhack.project.eventmanagement.dto.response.OrganizerResponse;
 import org.ironhack.project.eventmanagement.service.organizer.EventOrganizerService;
@@ -17,7 +18,7 @@ public class OrganizerController {
 
     @PostMapping
     public OrganizerResponse add(@PathVariable Long eventId,
-                                 @RequestBody AddOrganizerRequest request){
+                                 @RequestBody @Valid AddOrganizerRequest request){
         return organizerService.addOrganizer(eventId, request);
     }
 
