@@ -18,4 +18,32 @@ public class EventOrganizer {
     private Vendor vendor;
 
     private String role;
+
+    public Long getId() {
+        return id;
+    }
+
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
+    public Vendor getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(Vendor vendor) {
+        this.vendor = vendor;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 }
