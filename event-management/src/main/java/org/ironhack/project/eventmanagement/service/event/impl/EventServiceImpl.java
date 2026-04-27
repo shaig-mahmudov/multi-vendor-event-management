@@ -6,6 +6,8 @@ import org.ironhack.project.eventmanagement.dto.response.EventResponse;
 import org.ironhack.project.eventmanagement.entity.Category;
 import org.ironhack.project.eventmanagement.entity.Event;
 import org.ironhack.project.eventmanagement.entity.EventStatus;
+import org.ironhack.project.eventmanagement.exception.BadRequestException;
+import org.ironhack.project.eventmanagement.exception.NotFoundException;
 import org.ironhack.project.eventmanagement.mapper.EventMapper;
 import org.ironhack.project.eventmanagement.repository.CategoryRepository;
 import org.ironhack.project.eventmanagement.repository.EventRepository;
@@ -40,7 +42,7 @@ public class EventServiceImpl implements EventService {
 
         if (request.getCategoryId() != null) {
             category = categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> new RuntimeException("Category not found"));
+                    .orElseThrow(() -> new NotFoundException("Category not found"));
         }
 
         Event event = mapper.toEntity(request, category);
@@ -58,7 +60,11 @@ public class EventServiceImpl implements EventService {
     public EventResponse getById(Long id) {
 
         Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+                .orElseThrow(() -> new NotFoundException("Event not found"));
+
+        if(event.getStatus() == EventStatus.CANCELLED){
+            throw new NotFoundException("Event not found");
+        }
 
         return mapper.toResponse(event);
     }
@@ -123,13 +129,13 @@ public class EventServiceImpl implements EventService {
     public EventResponse update(Long id, UpdateEventRequest request) {
 
         Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+                .orElseThrow(() -> new NotFoundException("Event not found"));
 
         Category category = null;
 
         if (request.getCategoryId() != null) {
             category = categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> new RuntimeException("Category not found"));
+                    .orElseThrow(() -> new NotFoundException("Category not found"));
         }
 
         if (request.getTitle() != null) {
@@ -166,7 +172,7 @@ public class EventServiceImpl implements EventService {
     public void delete(Long id) {
 
         Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+                .orElseThrow(() -> new NotFoundException("Event not found"));
 
         event.setStatus(EventStatus.CANCELLED);
         event.setUpdatedAt(LocalDateTime.now());
@@ -179,7 +185,7 @@ public class EventServiceImpl implements EventService {
     public EventResponse publish(Long id) {
 
         Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+                .orElseThrow(() -> new NotFoundException("Event not found"));
 
         validateForPublish(event);
 
@@ -215,7 +221,7 @@ public class EventServiceImpl implements EventService {
         }
 
         if (!errors.isEmpty()) {
-            throw new RuntimeException(String.join(", ", errors));
+            throw new BadRequestException("To publish event fill all required data: " + String.join(", ", errors));
         }
     }
 }

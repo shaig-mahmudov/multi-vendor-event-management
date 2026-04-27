@@ -6,6 +6,7 @@ import org.ironhack.project.eventmanagement.entity.Event;
 import org.ironhack.project.eventmanagement.entity.EventOrganizer;
 import org.ironhack.project.eventmanagement.entity.Vendor;
 import org.ironhack.project.eventmanagement.exception.BadRequestException;
+import org.ironhack.project.eventmanagement.exception.ConflictException;
 import org.ironhack.project.eventmanagement.exception.NotFoundException;
 import org.ironhack.project.eventmanagement.repository.EventOrganizerRepository;
 import org.ironhack.project.eventmanagement.repository.EventRepository;
@@ -37,7 +38,7 @@ public class EventOrganizerServiceImpl implements EventOrganizerService {
                 .orElseThrow(() -> new NotFoundException("Vendor Not Found"));
 
         if(organizerRepository.existsByEventIdAndVendorId(eventId, vendor.getId())){
-            throw new BadRequestException("Organizer already exists for this event");
+            throw new ConflictException("Organizer already exists for this event");
         }
 
         EventOrganizer organizer = new EventOrganizer();

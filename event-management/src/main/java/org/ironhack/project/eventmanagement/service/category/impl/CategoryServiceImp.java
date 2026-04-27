@@ -3,6 +3,8 @@ package org.ironhack.project.eventmanagement.service.category.impl;
 import org.ironhack.project.eventmanagement.dto.request.category.CategoryRequest;
 import org.ironhack.project.eventmanagement.dto.response.CategoryResponse;
 import org.ironhack.project.eventmanagement.entity.Category;
+import org.ironhack.project.eventmanagement.exception.ConflictException;
+import org.ironhack.project.eventmanagement.exception.NotFoundException;
 import org.ironhack.project.eventmanagement.mapper.CategoryMapper;
 import org.ironhack.project.eventmanagement.repository.CategoryRepository;
 import org.ironhack.project.eventmanagement.service.category.CategoryService;
@@ -24,7 +26,7 @@ public class CategoryServiceImp implements CategoryService {
     public CategoryResponse create(CategoryRequest request){
         String name = request.getName().trim();
         if(repository.existsByNameIgnoreCase(name)){
-            throw new RuntimeException("Category already exists");
+            throw new ConflictException("Category already exists: " + name);
         }
 
         Category category = mapper.toEntity(request);
@@ -48,7 +50,7 @@ public class CategoryServiceImp implements CategoryService {
     @Override
     public CategoryResponse getById(Long id){
         Category category = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new NotFoundException("Category not found"));
         return mapper.toResponse(category);
     }
 
@@ -56,12 +58,12 @@ public class CategoryServiceImp implements CategoryService {
     @Override
     public CategoryResponse update(Long id, CategoryRequest request){
         Category category = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new NotFoundException("Category not found"));
 
         String newName = request.getName().trim();
 
         if(!category.getName().equalsIgnoreCase(newName) && repository.existsByNameIgnoreCase(newName)){
-            throw new RuntimeException("Category already exists");
+            throw new ConflictException("Category already exists: " + request.getName());
         }
 
         mapper.updateEntity(request,category);
@@ -75,11 +77,11 @@ public class CategoryServiceImp implements CategoryService {
     @Override
     public void delete(Long id){
         Category category = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new NotFoundException("Category not found"));
 
         // if category have events can't delete it
         if(category.getEvents() != null && !category.getEvents().isEmpty()){
-            throw new RuntimeException("Cannot delete category with events");
+            throw new ConflictException("Cannot delete category with events");
         }
         repository.delete(category);
     }
