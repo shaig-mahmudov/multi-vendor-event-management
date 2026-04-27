@@ -7,6 +7,7 @@ import org.ironhack.project.eventmanagement.entity.Category;
 import org.ironhack.project.eventmanagement.entity.Event;
 import org.ironhack.project.eventmanagement.entity.EventStatus;
 import org.ironhack.project.eventmanagement.exception.BadRequestException;
+import org.ironhack.project.eventmanagement.exception.ConflictException;
 import org.ironhack.project.eventmanagement.exception.NotFoundException;
 import org.ironhack.project.eventmanagement.mapper.EventMapper;
 import org.ironhack.project.eventmanagement.repository.CategoryRepository;
@@ -173,6 +174,10 @@ public class EventServiceImpl implements EventService {
 
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Event not found"));
+
+        if(event.getStatus() == EventStatus.CANCELLED){
+            throw new ConflictException("Event already deleted(cancelled)!");
+        }
 
         event.setStatus(EventStatus.CANCELLED);
         event.setUpdatedAt(LocalDateTime.now());
