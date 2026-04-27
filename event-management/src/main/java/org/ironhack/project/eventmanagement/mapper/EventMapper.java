@@ -68,7 +68,7 @@ public class EventMapper {
                 .toList()
                 : List.of();
 
-        return new EventResponse(
+        EventResponse response = new EventResponse(
                 event.getId(),
                 event.getTitle(),
                 event.getDescription(),
@@ -81,5 +81,9 @@ public class EventMapper {
                 event.getCreatedAt(),
                 event.getUpdatedAt()
         );
+
+        response.setOrganizers(organizers);
+
+        return response;
     }
 }

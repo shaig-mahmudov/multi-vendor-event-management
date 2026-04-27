@@ -9,4 +9,5 @@ public interface EventOrganizerRepository extends JpaRepository<EventOrganizer, 
     List<EventOrganizer> findByVendorId(Long vendorId);
 
     List<EventOrganizer> findByEventId(Long eventId);
+    boolean existsByEventIdAndVendorId(Long eventId, Long vendorId);
 }
