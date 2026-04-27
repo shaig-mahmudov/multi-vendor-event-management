@@ -3,6 +3,7 @@ package org.ironhack.project.eventmanagement.mapper;
 import org.ironhack.project.eventmanagement.dto.request.event.CreateEventRequest;
 import org.ironhack.project.eventmanagement.dto.request.event.UpdateEventRequest;
 import org.ironhack.project.eventmanagement.dto.response.EventResponse;
+import org.ironhack.project.eventmanagement.dto.response.OrganizerResponse;
 import org.ironhack.project.eventmanagement.entity.Category;
 import org.ironhack.project.eventmanagement.entity.Event;
 import org.ironhack.project.eventmanagement.entity.EventStatus;
@@ -10,6 +11,7 @@ import org.ironhack.project.eventmanagement.repository.CategoryRepository;
 import org.springframework.stereotype.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Component
 public class EventMapper {
@@ -54,7 +56,19 @@ public class EventMapper {
 
     // for response
     public EventResponse toResponse(Event event){
-        return new EventResponse(
+        List<OrganizerResponse> organizers = event.getOrganizers() != null
+                ? event.getOrganizers()
+                .stream()
+                .map(o -> new OrganizerResponse(
+                        o.getId(),
+                        o.getVendor().getId(),
+                        o.getVendor().getName(),
+                        o.getRole()
+                ))
+                .toList()
+                : List.of();
+
+        EventResponse response = new EventResponse(
                 event.getId(),
                 event.getTitle(),
                 event.getDescription(),
@@ -67,5 +81,9 @@ public class EventMapper {
                 event.getCreatedAt(),
                 event.getUpdatedAt()
         );
+
+        response.setOrganizers(organizers);
+
+        return response;
     }
 }

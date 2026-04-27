@@ -1,5 +1,6 @@
 package org.ironhack.project.eventmanagement.controller;
 
+import jakarta.validation.Valid;
 import org.ironhack.project.eventmanagement.dto.request.booking.CreateBookingRequest;
 import org.ironhack.project.eventmanagement.dto.response.BookingResponse;
 import org.ironhack.project.eventmanagement.entity.Booking;
@@ -8,7 +9,7 @@ import org.ironhack.project.eventmanagement.service.booking.BookingService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/bookings")
+@RequestMapping("/api/bookings")
 public class BookingController {
 
     private final BookingService bookingService;
@@ -21,10 +22,10 @@ public class BookingController {
     }
 
     @PostMapping
-    public BookingResponse createBooking(@RequestBody CreateBookingRequest request) {
-
+    public BookingResponse createBooking(
+            @Valid @RequestBody CreateBookingRequest request
+    ) {
         Booking booking = bookingService.createBooking(request);
-
         return bookingMapper.toResponse(booking);
     }
 
@@ -32,7 +33,6 @@ public class BookingController {
     public BookingResponse getBooking(@PathVariable Long id) {
 
         Booking booking = bookingService.getById(id);
-
         return bookingMapper.toResponse(booking);
     }
 

@@ -1,24 +1,35 @@
 package org.ironhack.project.eventmanagement.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Getter
 @Entity
 public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String title;
+
+    @Column(length = 1000)
     private String description;
+
     private LocalDateTime date;
+
     private String location;
+
     private String imageUrl;
+
     @Enumerated(EnumType.STRING)
     private EventStatus status;
 
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
 
     @ManyToOne
@@ -33,6 +44,8 @@ public class Event {
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<EventOrganizer> organizers;
+
+    // getters & setters
 
     public Long getId() {
         return id;

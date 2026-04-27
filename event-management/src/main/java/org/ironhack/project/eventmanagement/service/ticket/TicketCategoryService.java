@@ -18,4 +18,6 @@ public interface TicketCategoryService {
     void validateAvailability(Long id, int quantity);
 
     void decreaseQuantity(Long id, int quantity);
+
+    void increaseQuantity(Long id, int quantity);
 }
