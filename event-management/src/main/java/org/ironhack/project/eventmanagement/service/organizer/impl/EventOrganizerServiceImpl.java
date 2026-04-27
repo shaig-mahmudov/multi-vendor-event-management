@@ -11,9 +11,11 @@ import org.ironhack.project.eventmanagement.repository.EventOrganizerRepository;
 import org.ironhack.project.eventmanagement.repository.EventRepository;
 import org.ironhack.project.eventmanagement.repository.VendorRepository;
 import org.ironhack.project.eventmanagement.service.organizer.EventOrganizerService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class EventOrganizerServiceImpl implements EventOrganizerService {
     private final EventOrganizerRepository organizerRepository;
     private final EventRepository eventRepository;
