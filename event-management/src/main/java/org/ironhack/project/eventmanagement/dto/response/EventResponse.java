@@ -2,7 +2,6 @@ package org.ironhack.project.eventmanagement.dto.response;
 
 import org.ironhack.project.eventmanagement.entity.EventStatus;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,9 +17,9 @@ public class EventResponse {
     private LocalDateTime updatedAt;
     private Long categoryId;
     private String categoryName;
-    private List<OrganizerDTO>  organizers;
+    private List<OrganizerResponse>  organizers;
 
-    public EventResponse(Long id, String title, String description, LocalDateTime date, String location, String imageUrl, EventStatus status,Long categoryId, String categoryName, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public EventResponse(Long id, String title, String description, LocalDateTime date, String location, String imageUrl, EventStatus status, Long categoryId, String categoryName, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -42,7 +41,7 @@ public class EventResponse {
         return categoryName;
     }
 
-    public List<OrganizerDTO> getOrganizers() {
+    public List<OrganizerResponse> getOrganizers() {
         return organizers;
     }
 
@@ -80,5 +79,9 @@ public class EventResponse {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public void setOrganizers(List<OrganizerResponse> organizers) {
+        this.organizers = organizers;
     }
 }
