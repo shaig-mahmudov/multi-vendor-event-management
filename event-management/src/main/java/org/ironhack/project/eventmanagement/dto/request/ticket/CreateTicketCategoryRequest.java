@@ -1,12 +1,25 @@
 package org.ironhack.project.eventmanagement.dto.request.ticket;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 
 public class CreateTicketCategoryRequest {
 
+    @NotBlank(message = "Name cannot be empty")
     private String name;
+
+    @NotNull(message = "Price is required")
+    @Min(value = 0, message = "Price cannot be negative")
     private BigDecimal price;
+
+    @NotNull(message = "Quantity is required")
+    @Min(value = 1, message = "Quantity must be at least 1")
     private Integer quantity;
+
+    @NotNull(message = "EventId is required")
     private Long eventId;
 
     public String getName() {

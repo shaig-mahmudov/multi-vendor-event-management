@@ -18,6 +18,7 @@ public class TicketCategory {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private boolean active = true;
 
     @ManyToOne
     @JoinColumn(name = "event_id")
@@ -88,5 +89,13 @@ public class TicketCategory {
 
     public void setBookingItems(List<BookingItem> bookingItems) {
         this.bookingItems = bookingItems;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }
