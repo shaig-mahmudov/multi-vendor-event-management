@@ -45,16 +45,17 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = new Booking();
         booking.setStatus(BookingStatus.PENDING);
         booking.setCreatedAt(LocalDateTime.now());
-
         booking.setUser(requireCurrentUser());
 
         List<BookingItem> items = new ArrayList<>();
         BigDecimal totalPrice = BigDecimal.ZERO;
 
         for (BookingItemRequest reqItem : request.getItems()) {
+
             if (reqItem.getTicketCategoryId() == null) {
                 throw new BadRequestException("ticketCategoryId is required");
             }
+
             if (reqItem.getQuantity() == null || reqItem.getQuantity() <= 0) {
                 throw new BadRequestException("quantity must be greater than 0");
             }
@@ -100,6 +101,11 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    public List<Booking> getAll() {
+        return bookingRepository.findAll();
+    }
+
+    @Override
     public void cancelBooking(Long bookingId) {
 
         Booking booking = getById(bookingId);
@@ -123,11 +129,13 @@ public class BookingServiceImpl implements BookingService {
 
     private User requireCurrentUser() {
         var auth = SecurityContextHolder.getContext().getAuthentication();
+
         if (auth == null || !auth.isAuthenticated() || auth.getName() == null) {
             throw new UnauthorizedException("Not authenticated");
         }
 
         String email = auth.getName();
+
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UnauthorizedException("User not found"));
     }
