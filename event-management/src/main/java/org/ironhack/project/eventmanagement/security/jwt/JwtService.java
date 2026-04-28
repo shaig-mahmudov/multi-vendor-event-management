@@ -16,15 +16,19 @@ import java.util.Date;
 @Service
 public class JwtService {
 
+    private static final int MIN_KEY_BYTES = 32;
     private final SecretKey signingKey;
     private final long expirationSeconds;
+    private final String issuer;
 
     public JwtService(
             @Value("${app.jwt.secret}") String secret,
-            @Value("${app.jwt.expiration-seconds:3600}") long expirationSeconds
+            @Value("${app.jwt.expiration-seconds:3600}") long expirationSeconds,
+            @Value("${app.jwt.issuer:event-management}") String issuer
     ) {
-        this.signingKey = Keys.hmacShaKeyFor(decodeSecret(secret));
+        this.signingKey = Keys.hmacShaKeyFor(decodeAndValidateSecret(secret));
         this.expirationSeconds = expirationSeconds;
+        this.issuer = issuer;
     }
 
     public long getExpirationSeconds() {
@@ -37,6 +41,7 @@ public class JwtService {
 
         return Jwts.builder()
                 .subject(userDetails.getUsername())
+                .issuer(issuer)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(exp))
                 .signWith(signingKey)
@@ -51,27 +56,43 @@ public class JwtService {
         var claims = parseClaims(token);
         var username = claims.getSubject();
         var expired = claims.getExpiration().before(new Date());
-        return username.equals(userDetails.getUsername()) && !expired;
+        var issuerMatches = issuer.equals(claims.getIssuer());
+        return username != null
+                && username.equals(userDetails.getUsername())
+                && !expired
+                && issuerMatches;
     }
 
     private Claims parseClaims(String token) {
         return Jwts.parser()
                 .verifyWith(signingKey)
+                .requireIssuer(issuer)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
     }
 
-    private static byte[] decodeSecret(String secret) {
+    private static byte[] decodeAndValidateSecret(String secret) {
         if (secret == null || secret.isBlank()) {
             throw new IllegalStateException("app.jwt.secret must be set");
         }
 
         var trimmed = secret.trim();
+        byte[] keyBytes;
+
         try {
-            return Base64.getDecoder().decode(trimmed);
+            keyBytes = Base64.getDecoder().decode(trimmed);
         } catch (IllegalArgumentException ignored) {
-            return trimmed.getBytes(StandardCharsets.UTF_8);
+            keyBytes = trimmed.getBytes(StandardCharsets.UTF_8);
         }
+
+        if (keyBytes.length < MIN_KEY_BYTES) {
+            throw new IllegalStateException(
+                    "app.jwt.secret is too short: must be at least " + MIN_KEY_BYTES +
+                            " bytes (" + (MIN_KEY_BYTES * 8) + " bits). Got " + keyBytes.length + " bytes."
+            );
+        }
+
+        return keyBytes;
     }
 }
