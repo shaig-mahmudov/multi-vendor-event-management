@@ -10,7 +10,6 @@ import org.ironhack.project.eventmanagement.exception.UnauthorizedException;
 import org.ironhack.project.eventmanagement.repository.*;
 import org.ironhack.project.eventmanagement.security.jwt.JwtService;
 import org.ironhack.project.eventmanagement.service.email.EmailService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -167,7 +166,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void logout(LogoutRequest request) {
-        var token = request.getRefreshToken();
+        var token = request.getAccessToken();
         if (token != null && !token.isBlank()) {
             try {
                 var expiration = Instant.now().plusSeconds(jwtService.getExpirationSeconds());
@@ -206,17 +205,15 @@ public class AuthServiceImpl implements AuthService {
         }
 
         var user = userOpt.get();
-
-        passwordResetTokenRepository.deleteByUser(user);
+        passwordResetTokenRepository.findByUser(user).ifPresent(passwordResetTokenRepository::delete);
 
         var resetToken = new PasswordResetToken();
         resetToken.setToken(UUID.randomUUID().toString());
         resetToken.setUser(user);
-        resetToken.setExpiryDate(Instant.now().plusSeconds(3600));
+        resetToken.setExpiryDate(Instant.now().plusSeconds(3600)); // 1 hour
         passwordResetTokenRepository.save(resetToken);
 
-        String resetTokenValue = resetToken.getToken();
-        emailService.sendPasswordResetEmail(user.getEmail(), resetTokenValue);
+        emailService.sendPasswordResetEmail(user.getEmail(), resetToken.getToken());
     }
 
     @Override
@@ -227,10 +224,6 @@ public class AuthServiceImpl implements AuthService {
 
         if (resetToken.getExpiryDate().isBefore(Instant.now())) {
             throw new BadRequestException("Password reset token expired");
-        }
-
-        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
-            throw new BadRequestException("Passwords do not match");
         }
 
         var user = resetToken.getUser();
