@@ -1,12 +1,14 @@
 package org.ironhack.project.eventmanagement.dto.response;
 
+import org.ironhack.project.eventmanagement.entity.OrganizerRole;
+
 public class OrganizerResponse {
     private Long id;
     private Long vendorId;
     private String vendorName;
-    private String role;
+    private OrganizerRole role;
 
-    public OrganizerResponse(Long id, Long vendorId, String vendorName, String role) {
+    public OrganizerResponse(Long id, Long vendorId, String vendorName, OrganizerRole role) {
         this.id = id;
         this.vendorId = vendorId;
         this.vendorName = vendorName;
@@ -25,7 +27,7 @@ public class OrganizerResponse {
         return vendorName;
     }
 
-    public String getRole() {
+    public OrganizerRole getRole() {
         return role;
     }
 }
