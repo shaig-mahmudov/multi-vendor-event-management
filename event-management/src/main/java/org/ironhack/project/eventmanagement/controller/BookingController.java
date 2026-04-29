@@ -6,6 +6,7 @@ import org.ironhack.project.eventmanagement.dto.response.BookingResponse;
 import org.ironhack.project.eventmanagement.entity.Booking;
 import org.ironhack.project.eventmanagement.mapper.BookingMapper;
 import org.ironhack.project.eventmanagement.service.booking.BookingService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
