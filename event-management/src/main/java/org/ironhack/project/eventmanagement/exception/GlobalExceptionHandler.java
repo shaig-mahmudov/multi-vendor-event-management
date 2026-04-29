@@ -14,7 +14,8 @@ public class GlobalExceptionHandler {
             BadRequestException.class,
             UnauthorizedException.class,
             NotFoundException.class,
-            ForbiddenException.class
+            ForbiddenException.class,
+            ConflictException.class
     })
     public ResponseEntity<ErrorResponse> handleKnown(RuntimeException ex) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -22,6 +23,7 @@ public class GlobalExceptionHandler {
         else if (ex instanceof UnauthorizedException) status = HttpStatus.UNAUTHORIZED;
         else if (ex instanceof NotFoundException) status = HttpStatus.NOT_FOUND;
         else if (ex instanceof ForbiddenException) status = HttpStatus.FORBIDDEN;
+        else if (ex instanceof ConflictException) status = HttpStatus.CONFLICT;
         return ResponseEntity.status(status).body(new ErrorResponse(status.value(), ex.getMessage()));
     }
 

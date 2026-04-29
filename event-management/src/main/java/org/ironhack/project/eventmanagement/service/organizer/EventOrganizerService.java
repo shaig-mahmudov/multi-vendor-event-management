@@ -11,4 +11,5 @@ public interface EventOrganizerService {
     List<OrganizerResponse> getOrganizers(Long eventId);
 
     void removeOrganizer(Long organizerId);
+    void transferOwnership(Long eventId, Long newVendorId);
 }

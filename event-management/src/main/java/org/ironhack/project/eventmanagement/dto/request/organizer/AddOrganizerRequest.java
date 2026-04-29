@@ -1,8 +1,17 @@
 package org.ironhack.project.eventmanagement.dto.request.organizer;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+import org.ironhack.project.eventmanagement.entity.OrganizerRole;
+
 public class AddOrganizerRequest {
+    @NotNull(message = "Vendor Id is a must")
+    @Positive(message = "Vendor Id must be positive")
     private Long vendorId;
-    private String role;
+    @NotNull(message = "Role can't be empty")
+    private OrganizerRole role;
 
     public Long getVendorId() {
         return vendorId;
@@ -12,11 +21,11 @@ public class AddOrganizerRequest {
         this.vendorId = vendorId;
     }
 
-    public String getRole() {
+    public OrganizerRole getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(OrganizerRole role) {
         this.role = role;
     }
 }

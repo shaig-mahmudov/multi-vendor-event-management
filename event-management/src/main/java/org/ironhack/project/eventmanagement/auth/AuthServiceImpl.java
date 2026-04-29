@@ -33,6 +33,7 @@ public class AuthServiceImpl implements AuthService {
     private final VerificationTokenRepository verificationTokenRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final EmailService emailService;
+    private final VendorRepository vendorRepository;
 
     public AuthServiceImpl(
             UserRepository userRepository,
@@ -43,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
             JwtBlacklistRepository jwtBlacklistRepository,
             VerificationTokenRepository verificationTokenRepository,
             PasswordResetTokenRepository passwordResetTokenRepository,
-            EmailService emailService
+            EmailService emailService, VendorRepository vendorRepository
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -54,6 +55,7 @@ public class AuthServiceImpl implements AuthService {
         this.verificationTokenRepository = verificationTokenRepository;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
         this.emailService = emailService;
+        this.vendorRepository = vendorRepository;
     }
 
     @Override
@@ -72,6 +74,13 @@ public class AuthServiceImpl implements AuthService {
         user.setFailedLoginAttempts(0);
 
         var saved = userRepository.save(user);
+
+        if (saved.getRole() == Role.VENDOR) {
+            var vendor = new Vendor();
+            vendor.setUser(saved);
+            vendor.setName(saved.getName());
+            vendorRepository.save(vendor);
+        }
 
         var verificationToken = new VerificationToken();
         verificationToken.setToken(UUID.randomUUID().toString());
