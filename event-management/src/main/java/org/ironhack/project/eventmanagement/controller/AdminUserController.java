@@ -19,6 +19,7 @@ public class AdminUserController {
     }
 
     @PatchMapping("/{userId}/role")
+    @PreAuthorize("hasRole('ADMIN')")
     public UserResponse setRole(@PathVariable Long userId, @Valid @RequestBody UpdateUserRoleRequest request) {
         return adminUserService.setUserRole(userId, request.getRole());
     }
