@@ -3,18 +3,16 @@ package org.ironhack.project.eventmanagement.service.event.impl;
 import org.ironhack.project.eventmanagement.dto.request.event.CreateEventRequest;
 import org.ironhack.project.eventmanagement.dto.request.event.UpdateEventRequest;
 import org.ironhack.project.eventmanagement.dto.response.EventResponse;
-import org.ironhack.project.eventmanagement.entity.Category;
-import org.ironhack.project.eventmanagement.entity.Event;
-import org.ironhack.project.eventmanagement.entity.EventStatus;
+import org.ironhack.project.eventmanagement.entity.*;
 import org.ironhack.project.eventmanagement.exception.BadRequestException;
 import org.ironhack.project.eventmanagement.exception.ConflictException;
 import org.ironhack.project.eventmanagement.exception.NotFoundException;
+import org.ironhack.project.eventmanagement.exception.UnauthorizedException;
 import org.ironhack.project.eventmanagement.mapper.EventMapper;
-import org.ironhack.project.eventmanagement.repository.CategoryRepository;
-import org.ironhack.project.eventmanagement.repository.EventRepository;
+import org.ironhack.project.eventmanagement.repository.*;
 import org.ironhack.project.eventmanagement.service.event.EventService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,18 +24,23 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final CategoryRepository categoryRepository;
     private final EventMapper mapper;
+    private final EventOrganizerRepository organizerRepository;
+    private final UserRepository userRepository;
+    private final VendorRepository vendorRepository;
 
-    public EventServiceImpl(EventRepository eventRepository,
-                            CategoryRepository categoryRepository,
-                            EventMapper mapper) {
+    public EventServiceImpl(EventRepository eventRepository, CategoryRepository categoryRepository, EventMapper mapper, EventOrganizerRepository organizerRepository, UserRepository userRepository, VendorRepository vendorRepository) {
         this.eventRepository = eventRepository;
         this.categoryRepository = categoryRepository;
         this.mapper = mapper;
+        this.organizerRepository = organizerRepository;
+        this.userRepository = userRepository;
+        this.vendorRepository = vendorRepository;
     }
 
     // CREATE
     @Override
     public EventResponse create(CreateEventRequest request) {
+        Vendor vendor = getCurrentVendor();
 
         Category category = null;
 
@@ -53,6 +56,13 @@ public class EventServiceImpl implements EventService {
 
         Event saved = eventRepository.save(event);
 
+        EventOrganizer organizer = new EventOrganizer();
+        organizer.setEvent(saved);
+        organizer.setVendor(vendor);
+        organizer.setRole(OrganizerRole.MAIN);
+
+        organizerRepository.save(organizer);
+
         return mapper.toResponse(saved);
     }
 
@@ -63,11 +73,29 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Event not found"));
 
-        if(event.getStatus() == EventStatus.CANCELLED){
-            throw new NotFoundException("Event not found");
+        User user = getCurrentUser();
+
+        if(user.getRole().equals(Role.ADMIN)) {
+            return mapper.toResponse(event);
         }
 
-        return mapper.toResponse(event);
+        if (event.getStatus() == EventStatus.PUBLISHED) {
+            return mapper.toResponse(event);
+        }
+
+        Vendor vendor = vendorRepository.findByUserId(user.getId())
+                .orElse(null);
+
+        if (vendor != null) {
+            boolean isOwner = organizerRepository
+                    .existsByEventIdAndVendorIdAndRole(id, vendor.getId(), OrganizerRole.MAIN);
+
+            if (isOwner) {
+                return mapper.toResponse(event);
+            }
+        }
+
+        throw new NotFoundException("Event not found");
     }
 
     // PUBLIC LISTING
@@ -132,6 +160,18 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Event not found"));
 
+        User user = getCurrentUser();
+
+        if(!user.getRole().equals(Role.ADMIN)) {
+            Vendor vendor = getCurrentVendor();
+
+            checkOwnership(id, vendor.getId());
+
+            if(event.getStatus() == EventStatus.PUBLISHED){
+                throw new ConflictException("Cannot update published event");
+            }
+        }
+
         Category category = null;
 
         if (request.getCategoryId() != null) {
@@ -175,6 +215,13 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Event not found"));
 
+        User user =  getCurrentUser();
+
+        if (!user.getRole().equals(Role.ADMIN)) {
+            Vendor vendor = getCurrentVendor();
+            checkOwnership(id, vendor.getId());
+        }
+
         if(event.getStatus() == EventStatus.CANCELLED){
             throw new ConflictException("Event already deleted(cancelled)!");
         }
@@ -191,6 +238,13 @@ public class EventServiceImpl implements EventService {
 
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Event not found"));
+
+        User user = getCurrentUser();
+
+        if(!user.getRole().equals(Role.ADMIN)) {
+            Vendor vendor = getCurrentVendor();
+            checkOwnership(id, vendor.getId());
+        }
 
         validateForPublish(event);
 
@@ -229,4 +283,32 @@ public class EventServiceImpl implements EventService {
             throw new BadRequestException("To publish event fill all required data: " + String.join(", ", errors));
         }
     }
+
+    private User getCurrentUser() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !auth.isAuthenticated() || auth.getName() == null) {
+            throw new UnauthorizedException("Not authenticated");
+        }
+
+        return userRepository.findByEmail(auth.getName())
+                .orElseThrow(() -> new UnauthorizedException("User not found"));
+    }
+
+    private Vendor getCurrentVendor() {
+        User user = getCurrentUser();
+
+        return vendorRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new BadRequestException("User is not a vendor"));
+    }
+
+    private void checkOwnership(Long eventId, Long vendorId) {
+        boolean isOwner = organizerRepository
+                .existsByEventIdAndVendorIdAndRole(eventId, vendorId, OrganizerRole.MAIN);
+
+        if (!isOwner) {
+            throw new UnauthorizedException("You are not owner of this event");
+        }
+    }
 }
+
