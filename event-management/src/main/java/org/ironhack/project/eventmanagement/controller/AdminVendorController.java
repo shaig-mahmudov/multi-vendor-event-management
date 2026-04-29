@@ -18,16 +18,19 @@ public class AdminVendorController {
     }
 
     @PatchMapping("/{vendorId}/approve")
+    @PreAuthorize("hasRole('ADMIN')")
     public VendorResponse approveVendor(@PathVariable Long vendorId) {
         return adminVendorService.updateVendorStatus(vendorId, VendorStatus.APPROVED);
     }
 
     @PatchMapping("/{vendorId}/reject")
+    @PreAuthorize("hasRole('ADMIN')")
     public VendorResponse rejectVendor(@PathVariable Long vendorId) {
         return adminVendorService.updateVendorStatus(vendorId, VendorStatus.REJECTED);
     }
 
     @PatchMapping("/{vendorId}/suspend")
+    @PreAuthorize("hasRole('ADMIN')")
     public VendorResponse suspendVendor(@PathVariable Long vendorId) {
         return adminVendorService.updateVendorStatus(vendorId, VendorStatus.SUSPENDED);
     }
