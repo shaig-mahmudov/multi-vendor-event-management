@@ -9,6 +9,8 @@ import org.ironhack.project.eventmanagement.service.booking.BookingService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/bookings")
 public class BookingController {
@@ -23,18 +25,23 @@ public class BookingController {
     }
 
     @PostMapping
-    public BookingResponse createBooking(
-            @Valid @RequestBody CreateBookingRequest request
-    ) {
+    public BookingResponse createBooking(@Valid @RequestBody CreateBookingRequest request) {
         Booking booking = bookingService.createBooking(request);
         return bookingMapper.toResponse(booking);
     }
 
     @GetMapping("/{id}")
     public BookingResponse getBooking(@PathVariable Long id) {
-
         Booking booking = bookingService.getById(id);
         return bookingMapper.toResponse(booking);
+    }
+
+    @GetMapping
+    public List<BookingResponse> getAll() {
+        return bookingService.getAll()
+                .stream()
+                .map(bookingMapper::toResponse)
+                .toList();
     }
 
     @DeleteMapping("/{id}")

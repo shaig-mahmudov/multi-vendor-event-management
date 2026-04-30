@@ -6,6 +6,7 @@ import org.ironhack.project.eventmanagement.dto.request.event.UpdateEventRequest
 import org.ironhack.project.eventmanagement.dto.response.EventResponse;
 import org.ironhack.project.eventmanagement.service.event.EventService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ public class EventController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('VENDOR')")
     @ResponseStatus(HttpStatus.CREATED)
     public EventResponse create(@RequestBody @Valid CreateEventRequest eventRequest){
         return eventService.create(eventRequest);
@@ -42,22 +44,26 @@ public class EventController {
 
     // admin listing
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<EventResponse> getAll(){
         return eventService.getAll();
     }
 
+    @PreAuthorize("hasAnyRole('VENDOR','ADMIN')")
     @PutMapping("/{id}")
     public EventResponse update(@PathVariable Long id,@RequestBody @Valid UpdateEventRequest request){
         return  eventService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize(("hasAnyRole('VENDOR','ADMIN')"))
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id){
         eventService.delete(id);
     }
 
     @PatchMapping("/{id}/publish")
+    @PreAuthorize(("hasAnyRole('VENDOR','ADMIN')"))
     public EventResponse publish(@PathVariable Long id){
         return eventService.publish(id);
     }

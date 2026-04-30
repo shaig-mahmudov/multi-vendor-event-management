@@ -17,7 +17,7 @@ public class EventOrganizer {
     @JoinColumn(name = "vendor_id")
     private Vendor vendor;
 
-    private String role;
+    private OrganizerRole role;
 
     public Long getId() {
         return id;
@@ -39,11 +39,11 @@ public class EventOrganizer {
         this.vendor = vendor;
     }
 
-    public String getRole() {
+    public OrganizerRole getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(OrganizerRole role) {
         this.role = role;
     }
 }

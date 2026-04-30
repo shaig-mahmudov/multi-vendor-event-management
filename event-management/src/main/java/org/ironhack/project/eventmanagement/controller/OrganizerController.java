@@ -1,8 +1,11 @@
 package org.ironhack.project.eventmanagement.controller;
 
+import jakarta.validation.Valid;
 import org.ironhack.project.eventmanagement.dto.request.organizer.AddOrganizerRequest;
+import org.ironhack.project.eventmanagement.dto.request.organizer.TransferOwnershipRequest;
 import org.ironhack.project.eventmanagement.dto.response.OrganizerResponse;
 import org.ironhack.project.eventmanagement.service.organizer.EventOrganizerService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,8 +19,9 @@ public class OrganizerController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('VENDOR','ADMIN')")
     public OrganizerResponse add(@PathVariable Long eventId,
-                                 @RequestBody AddOrganizerRequest request){
+                                 @RequestBody @Valid AddOrganizerRequest request){
         return organizerService.addOrganizer(eventId, request);
     }
 
@@ -27,7 +31,16 @@ public class OrganizerController {
     }
 
     @DeleteMapping("/{organizerId}")
-    public void delete(@PathVariable Long organizerId){
+    @PreAuthorize("hasAnyRole('VENDOR','ADMIN')")
+    public void delete(@PathVariable Long eventId,
+                       @PathVariable Long organizerId){
         organizerService.removeOrganizer(organizerId);
+    }
+
+    @PatchMapping("/transfer")
+    @PreAuthorize("hasAnyRole('VENDOR','ADMIN')")
+    public void transferOwnership(@PathVariable Long eventId,
+                                  @RequestBody @Valid TransferOwnershipRequest request){
+        organizerService.transferOwnership(eventId, request.getNewVendorId());
     }
 }

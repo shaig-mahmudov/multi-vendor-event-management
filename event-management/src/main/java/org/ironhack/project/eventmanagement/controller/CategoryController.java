@@ -6,6 +6,7 @@ import org.ironhack.project.eventmanagement.dto.request.category.CategoryRequest
 import org.ironhack.project.eventmanagement.dto.response.CategoryResponse;
 import org.ironhack.project.eventmanagement.service.category.CategoryService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class CategoryController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public CategoryResponse create(@RequestBody @Valid CategoryRequest request){
         return categoryService.create(request);
@@ -36,11 +38,13 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse update(@PathVariable Long id,@RequestBody @Valid CategoryRequest request){
         return categoryService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id){
         categoryService.delete(id);
