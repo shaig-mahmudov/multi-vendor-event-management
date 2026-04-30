@@ -6,12 +6,12 @@ import org.ironhack.project.eventmanagement.dto.response.TicketCategoryResponse;
 import org.ironhack.project.eventmanagement.entity.TicketCategory;
 import org.ironhack.project.eventmanagement.mapper.TicketCategoryMapper;
 import org.ironhack.project.eventmanagement.service.ticket.TicketCategoryService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/ticket-categories")
 public class TicketCategoryController {
 
     private final TicketCategoryService ticketCategoryService;
@@ -23,21 +23,26 @@ public class TicketCategoryController {
         this.ticketCategoryMapper = ticketCategoryMapper;
     }
 
-    @PostMapping
+    @PostMapping("/events/{eventId}/ticket-categories")
+    @PreAuthorize("hasAnyRole('VENDOR','ADMIN')")
     public TicketCategoryResponse create(
+            @PathVariable Long eventId,
             @Valid @RequestBody CreateTicketCategoryRequest request
     ) {
-        TicketCategory saved = ticketCategoryService.create(request);
+        TicketCategory saved = ticketCategoryService.create(eventId, request);
         return ticketCategoryMapper.toResponse(saved);
     }
 
-    @GetMapping("/{id}")
-    public TicketCategoryResponse getById(@PathVariable Long id) {
-        TicketCategory category = ticketCategoryService.getById(id);
-        return ticketCategoryMapper.toResponse(category);
+    @GetMapping("/events/{eventId}/ticket-categories")
+    public List<TicketCategoryResponse> getByEvent(@PathVariable Long eventId) {
+        return ticketCategoryService.getByEventId(eventId)
+                .stream()
+                .map(ticketCategoryMapper::toResponse)
+                .toList();
     }
 
-    @GetMapping
+    @GetMapping("/ticket-categories/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<TicketCategoryResponse> getAll() {
         return ticketCategoryService.getAll()
                 .stream()
@@ -45,8 +50,10 @@ public class TicketCategoryController {
                 .toList();
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        ticketCategoryService.delete(id);
+    @DeleteMapping("/events/{eventId}/ticket-categories/{id}")
+    @PreAuthorize("hasAnyRole('VENDOR','ADMIN')")
+    public void delete(@PathVariable Long eventId,
+                       @PathVariable Long id) {
+        ticketCategoryService.delete(eventId, id);
     }
 }
