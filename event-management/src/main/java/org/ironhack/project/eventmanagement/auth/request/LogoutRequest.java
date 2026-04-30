@@ -3,14 +3,14 @@ package org.ironhack.project.eventmanagement.auth.request;
 import jakarta.validation.constraints.NotBlank;
 
 public class LogoutRequest {
-    @NotBlank(message = "Access token is required")
-    private String accessToken;
+    @NotBlank(message = "Refresh token is required")
+    private String refreshToken;
 
-    public String getAccessToken() {
-        return accessToken;
+    public String getRefreshToken() {
+        return refreshToken;
     }
 
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }
