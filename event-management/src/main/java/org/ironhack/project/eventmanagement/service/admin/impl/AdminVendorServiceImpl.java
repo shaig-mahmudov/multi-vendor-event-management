@@ -33,19 +33,18 @@ public class AdminVendorServiceImpl implements AdminVendorService {
                 .orElseThrow(() -> new NotFoundException("Vendor not found"));
 
         vendor.setStatus(status);
-        
+
         User user = vendor.getUser();
         if (status == VendorStatus.APPROVED) {
             if (user.getRole() != Role.ADMIN) {
                 user.setRole(Role.VENDOR);
             }
         } else {
-            // If suspended or rejected, we might want to revoke VENDOR role
             if (user.getRole() == Role.VENDOR) {
                 user.setRole(Role.CUSTOMER);
             }
         }
-        
+
         userRepository.save(user);
         Vendor saved = vendorRepository.save(vendor);
         return vendorMapper.toResponse(saved);

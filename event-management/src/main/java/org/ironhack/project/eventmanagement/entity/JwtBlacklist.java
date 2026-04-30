@@ -4,7 +4,13 @@ import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "jwt_blacklist")
+@Table(
+        name = "jwt_blacklist",
+        indexes = {
+                @Index(name = "idx_token", columnList = "token"),
+                @Index(name = "idx_expiry", columnList = "expiryDate")
+        }
+)
 public class JwtBlacklist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

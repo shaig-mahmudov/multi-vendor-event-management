@@ -31,7 +31,6 @@ public class EmailServiceImpl implements EmailService {
     @Async
     @Override
     public void sendVerificationEmail(String to, String token) {
-        log.info(">>> sendVerificationEmail called for: {}", to);
         String link = baseUrl + "/api/auth/verify-email?token=" + token;
 
         String subject = "Verify your email address";
@@ -106,7 +105,6 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private void send(String to, String subject, String htmlBody) {
-        log.info(">>> Attempting to send email to: {}", to);
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, "UTF-8");

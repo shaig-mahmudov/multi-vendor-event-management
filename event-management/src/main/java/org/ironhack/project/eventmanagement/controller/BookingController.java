@@ -25,6 +25,7 @@ public class BookingController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('CUSTOMER')")
     public BookingResponse createBooking(@Valid @RequestBody CreateBookingRequest request) {
         Booking booking = bookingService.createBooking(request);
         return bookingMapper.toResponse(booking);
