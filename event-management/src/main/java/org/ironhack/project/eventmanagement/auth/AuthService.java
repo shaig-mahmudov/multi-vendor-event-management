@@ -9,7 +9,7 @@ public interface AuthService {
     AuthResponse register(RegisterRequest request);
     AuthResponse login(LoginRequest request);
     UserInfoResponse me(String email);
-    
+
     AuthResponse refreshToken(org.ironhack.project.eventmanagement.auth.request.RefreshTokenRequest request);
     void logout(org.ironhack.project.eventmanagement.auth.request.LogoutRequest request);
     void verifyEmail(String token);
