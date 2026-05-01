@@ -102,6 +102,7 @@ class BookingControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void cancelBooking_success() throws Exception {
 
         mockMvc.perform(delete("/api/bookings/1"))
