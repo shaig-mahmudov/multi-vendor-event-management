@@ -25,13 +25,16 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final TicketCategoryService ticketCategoryService;
     private final UserRepository userRepository;
+    private final TicketCategoryRepository  ticketCategoryRepository;
 
     public BookingServiceImpl(BookingRepository bookingRepository,
                               TicketCategoryService ticketCategoryService,
                               UserRepository userRepository) {
+                              TicketCategoryRepository ticketCategoryRepository,
         this.bookingRepository = bookingRepository;
         this.ticketCategoryService = ticketCategoryService;
         this.userRepository = userRepository;
+        this.ticketCategoryRepository = ticketCategoryRepository;
     }
 
     @Transactional
