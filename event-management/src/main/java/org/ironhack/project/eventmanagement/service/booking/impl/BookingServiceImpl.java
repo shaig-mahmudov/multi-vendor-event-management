@@ -6,8 +6,7 @@ import org.ironhack.project.eventmanagement.entity.*;
 import org.ironhack.project.eventmanagement.exception.BadRequestException;
 import org.ironhack.project.eventmanagement.exception.NotFoundException;
 import org.ironhack.project.eventmanagement.exception.UnauthorizedException;
-import org.ironhack.project.eventmanagement.repository.BookingRepository;
-import org.ironhack.project.eventmanagement.repository.UserRepository;
+import org.ironhack.project.eventmanagement.repository.*;
 import org.ironhack.project.eventmanagement.service.booking.BookingService;
 import org.ironhack.project.eventmanagement.service.ticket.TicketCategoryService;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,15 +25,21 @@ public class BookingServiceImpl implements BookingService {
     private final TicketCategoryService ticketCategoryService;
     private final UserRepository userRepository;
     private final TicketCategoryRepository  ticketCategoryRepository;
+    private final VendorRepository  vendorRepository;
+    private final EventOrganizerRepository organizerRepository;
 
     public BookingServiceImpl(BookingRepository bookingRepository,
                               TicketCategoryService ticketCategoryService,
-                              UserRepository userRepository) {
+                              UserRepository userRepository,
                               TicketCategoryRepository ticketCategoryRepository,
+                              VendorRepository vendorRepository,
+                              EventOrganizerRepository organizerRepository) {
         this.bookingRepository = bookingRepository;
         this.ticketCategoryService = ticketCategoryService;
         this.userRepository = userRepository;
         this.ticketCategoryRepository = ticketCategoryRepository;
+        this.vendorRepository = vendorRepository;
+        this.organizerRepository = organizerRepository;
     }
 
     @Transactional
