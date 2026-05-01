@@ -46,6 +46,7 @@ public class BookingController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','CUSTOMER')")
     public void cancelBooking(@PathVariable Long id) {
         bookingService.cancelBooking(id);
     }
