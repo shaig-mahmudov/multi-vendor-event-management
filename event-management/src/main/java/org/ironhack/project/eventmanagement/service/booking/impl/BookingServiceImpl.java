@@ -119,6 +119,19 @@ public class BookingServiceImpl implements BookingService {
 
         Booking booking = getById(bookingId);
 
+        User user = getCurrentUser();
+
+        if(!user.getRole().equals(Role.ADMIN)) {
+            if(user.getRole().equals(Role.CUSTOMER)){
+                boolean isOwner = user.getId().equals(booking.getUser().getId());
+                if(!isOwner) {
+                    throw new UnauthorizedException("Only owner of booking can cancel it");
+                }
+            }else{
+                throw new UnauthorizedException("Only owner of booking can cancel it");
+            }
+        }
+
         if (booking.getStatus() == BookingStatus.CANCELLED) {
             throw new BadRequestException("Booking is already cancelled");
         }
@@ -146,6 +159,16 @@ public class BookingServiceImpl implements BookingService {
         String email = auth.getName();
 
         return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UnauthorizedException("User not found"));
+    }
+    private User getCurrentUser() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !auth.isAuthenticated() || auth.getName() == null) {
+            throw new UnauthorizedException("Not authenticated");
+        }
+
+        return userRepository.findByEmail(auth.getName())
                 .orElseThrow(() -> new UnauthorizedException("User not found"));
     }
 }
