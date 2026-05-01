@@ -282,6 +282,14 @@ public class EventServiceImpl implements EventService {
         if (!errors.isEmpty()) {
             throw new BadRequestException("To publish event fill all required data: " + String.join(", ", errors));
         }
+
+        boolean hasActiveTickets = event.getTicketCategories()
+                .stream()
+                .anyMatch(tc -> tc.isActive() && tc.getQuantity() > 0);
+
+        if (!hasActiveTickets) {
+            errors.add("At least one ticket category is required");
+        }
     }
 
     private User getCurrentUser() {

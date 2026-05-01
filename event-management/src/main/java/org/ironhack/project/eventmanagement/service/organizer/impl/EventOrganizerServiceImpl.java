@@ -83,7 +83,7 @@ public class EventOrganizerServiceImpl implements EventOrganizerService {
 
         User user = getCurrentUser();
 
-        if(!user.getRole().equals(Role.ADMIN)){
+        if(user.getRole().equals(Role.ADMIN)){
             return map(eventId);
         }
 

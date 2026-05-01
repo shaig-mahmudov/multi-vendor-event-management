@@ -19,9 +19,6 @@ public class CreateTicketCategoryRequest {
     @Min(value = 1, message = "Quantity must be at least 1")
     private Integer quantity;
 
-    @NotNull(message = "EventId is required")
-    private Long eventId;
-
     public String getName() {
         return name;
     }
@@ -44,13 +41,5 @@ public class CreateTicketCategoryRequest {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
-    }
-
-    public Long getEventId() {
-        return eventId;
-    }
-
-    public void setEventId(Long eventId) {
-        this.eventId = eventId;
     }
 }
