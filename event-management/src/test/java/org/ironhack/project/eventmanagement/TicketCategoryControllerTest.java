@@ -12,19 +12,22 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc
+@WithMockUser(roles = "ADMIN")
 class TicketCategoryControllerTest {
 
     @Autowired
@@ -49,36 +52,35 @@ class TicketCategoryControllerTest {
         request.setName("VIP");
         request.setPrice(new BigDecimal("100"));
         request.setQuantity(50);
-        request.setEventId(1L);
 
-        given(ticketCategoryService.create(any(CreateTicketCategoryRequest.class)))
+        given(ticketCategoryService.create(eq(1L), any(CreateTicketCategoryRequest.class)))
                 .willReturn(ticketCategory);
 
         given(ticketCategoryMapper.toResponse(ticketCategory))
                 .willReturn(response);
 
-        mockMvc.perform(post("/api/ticket-categories")
+        mockMvc.perform(post("/events/1/ticket-categories")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
 
-        verify(ticketCategoryService).create(any(CreateTicketCategoryRequest.class));
+        verify(ticketCategoryService).create(eq(1L), any(CreateTicketCategoryRequest.class));
         verify(ticketCategoryMapper).toResponse(ticketCategory);
     }
 
     @Test
-    void getById_success() throws Exception {
+    void getByEvent_success() throws Exception {
 
         TicketCategory ticketCategory = new TicketCategory();
         TicketCategoryResponse response = new TicketCategoryResponse();
 
-        given(ticketCategoryService.getById(1L)).willReturn(ticketCategory);
+        given(ticketCategoryService.getByEventId(1L)).willReturn(List.of(ticketCategory));
         given(ticketCategoryMapper.toResponse(ticketCategory)).willReturn(response);
 
-        mockMvc.perform(get("/api/ticket-categories/1"))
+        mockMvc.perform(get("/events/1/ticket-categories"))
                 .andExpect(status().isOk());
 
-        verify(ticketCategoryService).getById(1L);
+        verify(ticketCategoryService).getByEventId(1L);
         verify(ticketCategoryMapper).toResponse(ticketCategory);
     }
 
@@ -91,7 +93,7 @@ class TicketCategoryControllerTest {
         given(ticketCategoryService.getAll()).willReturn(List.of(ticketCategory));
         given(ticketCategoryMapper.toResponse(ticketCategory)).willReturn(response);
 
-        mockMvc.perform(get("/api/ticket-categories"))
+        mockMvc.perform(get("/ticket-categories/all"))
                 .andExpect(status().isOk());
 
         verify(ticketCategoryService).getAll();
@@ -101,9 +103,9 @@ class TicketCategoryControllerTest {
     @Test
     void delete_success() throws Exception {
 
-        mockMvc.perform(delete("/api/ticket-categories/1"))
+        mockMvc.perform(delete("/events/1/ticket-categories/2"))
                 .andExpect(status().isOk());
 
-        verify(ticketCategoryService).delete(1L);
+        verify(ticketCategoryService).delete(1L, 2L);
     }
 }
