@@ -61,7 +61,8 @@ public class BookingServiceImpl implements BookingService {
             }
 
             TicketCategory category =
-                    ticketCategoryService.getById(reqItem.getTicketCategoryId());
+                    ticketCategoryRepository.findById(reqItem.getTicketCategoryId())
+                            .orElseThrow(() -> new NotFoundException("ticketCategory not found"));
 
             ticketCategoryService.validateAvailability(
                     category.getId(),
