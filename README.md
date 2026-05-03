@@ -3,6 +3,8 @@
 # CrowdGo
 
 ### Multi-Vendor Event Management Platform — Backend API
+> A production-grade RESTful backend API for a multi-vendor event marketplace — handling user authentication, vendor onboarding, event lifecycle management, ticket booking, reviews, and social interactions.
+
 
 ## Tech Stack
 <p>
@@ -24,8 +26,6 @@
     <img src="https://img.shields.io/badge/Trello-Project_Board-0052CC?style=for-the-badge&logo=trello&logoColor=white" />
   </a>
 </p>
-
-> A production-grade RESTful backend API for a multi-vendor event marketplace — handling user authentication, vendor onboarding, event lifecycle management, ticket booking, reviews, and social interactions.
 
 </div>
 
