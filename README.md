@@ -32,18 +32,18 @@
 
 ## 📌 Table of Contents
 
-- [Overview](#-overview)
-- [Key Features](#-key-features)
-- [Tech Stack](#-tech-stack)
-- [Architecture](#-architecture)
-- [Project Structure](#-project-structure)
-- [Project Management](#-project-management)
-- [Getting Started](#-getting-started)
-- [Environment Variables](#-environment-variables)
-- [API Overview](#-api-overview)
-- [Security Design](#-security-design)
-- [Future Improvements](#-future-improvements)
-- [Author](#-author)
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
+- [Project Structure](#project-structure)
+- [Project Management](#project-management)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [API Overview](#api-overview)
+- [Security Design](#security-design)
+- [Future Improvements](#future-improvements)
+- [Author](#author)
 
 ---
 
