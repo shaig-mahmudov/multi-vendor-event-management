@@ -18,6 +18,12 @@
   <img src="https://img.shields.io/badge/Java-17%2B-orange?style=flat-square" />
 </p>
 
+<p>
+  <a href="https://trello.com/b/HbirDhQD/crowdgo">
+    <img src="https://img.shields.io/badge/Trello-Project_Board-0052CC?style=for-the-badge&logo=trello&logoColor=white" />
+  </a>
+</p>
+
 > A production-grade RESTful backend API for a multi-vendor event marketplace — handling user authentication, vendor onboarding, event lifecycle management, ticket booking, reviews, and social interactions.
 
 </div>
@@ -31,6 +37,7 @@
 - [Tech Stack](#-tech-stack)
 - [Architecture](#-architecture)
 - [Project Structure](#-project-structure)
+- [Project Management](#-project-management)
 - [Getting Started](#-getting-started)
 - [Environment Variables](#-environment-variables)
 - [API Overview](#-api-overview)
@@ -194,6 +201,17 @@ multi-vendor-event-management/
 ```
 
 ---
+
+# 🔗 Trello Board: 
+## View CrowdGo Project Board
+
+# This board includes:
+
+- Feature planning
+- Backend task distribution
+- Sprint progress tracking
+- Bug fixing workflow
+- Future improvements roadmap
 
 ## Getting Started
 
